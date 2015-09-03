@@ -1,4 +1,4 @@
-module Padding where
+module Padding (pkcs7) where
 
 import Data.Word
 
