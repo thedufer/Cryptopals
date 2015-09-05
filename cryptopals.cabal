@@ -19,7 +19,7 @@ executable cryptopals
   main-is:             One/Seven.hs
   -- other-modules:       
   -- other-extensions:    
-  build-depends:       base >=4.7 && <4.8
+  build-depends:       base >=4.7 && <4.9
                      , cipher-aes
                      , bytestring
                      , random

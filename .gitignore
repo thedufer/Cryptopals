@@ -1,4 +1,5 @@
 .cabal-sandbox
 .DS_Store
+.stack-work
 cabal.sandbox.config
 dist
