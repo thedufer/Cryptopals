@@ -1,4 +1,4 @@
-module OneOne where
+module One.One where
 
 import StringByteConversion
 

@@ -1,4 +1,4 @@
-module OneThree where
+module One.Three where
 
 import Xor
 import StringByteConversion

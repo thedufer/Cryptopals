@@ -1,4 +1,4 @@
-module OneTwo where
+module One.Two where
 
 import Data.Word
 import StringByteConversion

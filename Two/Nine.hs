@@ -1,4 +1,4 @@
-module TwoNine where
+module Two.Nine where
 
 import Padding
 import StringByteConversion

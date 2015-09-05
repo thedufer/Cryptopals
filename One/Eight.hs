@@ -1,4 +1,4 @@
-module OneEight where
+module One.Eight where
 
 import StringByteConversion
 import Data.Word

@@ -1,4 +1,4 @@
-module OneFive where
+module One.Five where
 
 import Xor
 import StringByteConversion

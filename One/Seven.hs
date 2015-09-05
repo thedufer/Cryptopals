@@ -1,4 +1,4 @@
-module OneSeven where
+module One.Seven where
 
 import Crypto.Cipher.AES
 import StringByteConversion

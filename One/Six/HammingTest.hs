@@ -1,3 +1,5 @@
+module One.Six.HammingTest where
+
 import Data.Word
 import Data.Bits (xor, popCount)
 import StringByteConversion (stringToBytes)

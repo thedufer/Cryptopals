@@ -1,4 +1,4 @@
-module TwoTen where
+module Two.Ten where
 
 import AES (cbcDecrypt, aesInit)
 import StringByteConversion (charToByte, base64StringToBytes, bytesToString, stringToBytes)

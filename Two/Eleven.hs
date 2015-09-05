@@ -1,4 +1,4 @@
-module TwoEleven where
+module Two.Eleven where
 
 import Crypto.Cipher.AES
 import Data.Word

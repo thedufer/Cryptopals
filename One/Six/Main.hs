@@ -1,3 +1,5 @@
+module One.Six.Main where
+
 import Data.Word
 import StringByteConversion (base64StringToBytes, bytesToString)
 import Xor (bestMultiByteXor, bestNByteXor)
