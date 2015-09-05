@@ -22,6 +22,7 @@ executable cryptopals
   build-depends:       base >=4.7 && <4.8
                      , cipher-aes
                      , bytestring
+                     , random
 
   default-extensions: OverloadedStrings
   -- hs-source-dirs:      
