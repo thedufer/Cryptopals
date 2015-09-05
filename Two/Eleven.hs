@@ -1,21 +1,14 @@
 module Two.Eleven where
 
-import Crypto.Cipher.AES
 import Data.Word
 import System.Random (randomRIO)
-import Control.Monad (replicateM, liftM, liftM2, liftM3)
-import Control.Applicative (pure)
+import Control.Monad (liftM, liftM2, liftM3)
 
-import AES (aesInit, ecbEncrypt, cbcEncrypt)
-import StringByteConversion (bytesToHexString, charToByte)
+import AES (ecbEncrypt, cbcEncrypt)
+import Random (randomAES, randomByteString)
 import Padding (pkcs7)
-import Util (groupsOfSize)
-
-randomByte :: IO Word8
-randomByte = randomRIO (0, 255)
-
-randomByteString :: Int -> IO [Word8]
-randomByteString = flip replicateM randomByte
+import Oracle
+import OracleDetector (mIsECBOrCBC)
 
 randomLengthRandomByteString :: (Int, Int) -> IO [Word8]
 randomLengthRandomByteString range = randomRIO range >>= randomByteString
@@ -23,9 +16,6 @@ randomLengthRandomByteString range = randomRIO range >>= randomByteString
 -- 5-10 bytes on each end
 randomPadding :: [Word8] -> IO [Word8]
 randomPadding bs = liftM concat $ sequence [randomLengthRandomByteString (5, 10), pure bs, randomLengthRandomByteString (5, 10)]
-
-randomAES :: IO AES
-randomAES = (liftM aesInit) (randomByteString 16)
 
 randomECB :: [Word8] -> IO [Word8]
 randomECB bs = (liftM2 ecbEncrypt) randomAES (pure bs)
@@ -38,7 +28,7 @@ randomSelect as = liftM (as !!) $ randomRIO (0, length as - 1)
 
 -- 50/50 between ecb/cbc - keys/ivs are random 16-byte strings
 randomEncrypt :: [Word8] -> IO [Word8]
-randomEncrypt bs = (randomSelect [randomECB, randomCBC]) >>= (\f -> f bs)
+randomEncrypt bs = (randomSelect [randomECB, randomCBC]) >>= ($ bs)
 
 noisyRandomEncrypt :: [Word8] -> IO [Word8]
 noisyRandomEncrypt bs = do
@@ -46,25 +36,8 @@ noisyRandomEncrypt bs = do
   putStrLn str
   f bs
 
-oracle :: [Word8] -> IO [Word8]
+oracle :: MOracle IO
 oracle bs = noisyRandomEncrypt =<< (liftM $ pkcs7 16) (randomPadding bs)
 
-detectorString :: [Word8]
-detectorString = take 48 $ repeat $ charToByte 'a'
-
-hasEqualNeighbors :: Eq a => [a] -> Bool
-hasEqualNeighbors (a1:a2:as)
-  | a1 == a2  = True
-  | otherwise = hasEqualNeighbors (a2:as)
-hasEqualNeighbors _ = False
-
-detectOracle :: Monad m => ([Word8] -> m [Word8]) -> m String
-detectOracle f = do
-  out <- f detectorString
-  return $
-    if hasEqualNeighbors (groupsOfSize 16 out)
-      then "ECB"
-      else "CBC"
-
 main :: IO ()
-main = putStrLn =<< (detectOracle oracle)
+main = putStrLn =<< (mIsECBOrCBC oracle)
