@@ -8,7 +8,7 @@ import AES (ecbEncrypt, cbcEncrypt)
 import Random (randomAES, randomByteString)
 import Padding (pkcs7)
 import Oracle
-import OracleDetector (mIsECBOrCBC)
+import OracleDetector
 
 randomLengthRandomByteString :: (Int, Int) -> IO [Word8]
 randomLengthRandomByteString range = randomRIO range >>= randomByteString
@@ -27,17 +27,17 @@ randomSelect :: [a] -> IO a
 randomSelect as = liftM (as !!) $ randomRIO (0, length as - 1)
 
 -- 50/50 between ecb/cbc - keys/ivs are random 16-byte strings
-randomEncrypt :: [Word8] -> IO [Word8]
+randomEncrypt :: MOracle IO
 randomEncrypt bs = (randomSelect [randomECB, randomCBC]) >>= ($ bs)
 
-noisyRandomEncrypt :: [Word8] -> IO [Word8]
+noisyRandomEncrypt :: MOracle IO
 noisyRandomEncrypt bs = do
-  (f, str) <- randomSelect [(randomECB, "ECB"), (randomCBC, "CBC")]
-  putStrLn str
+  (f, typ) <- randomSelect [(randomECB, ECB), (randomCBC, CBC)]
+  putStrLn $ show typ
   f bs
 
 oracle :: MOracle IO
 oracle bs = noisyRandomEncrypt =<< (liftM $ pkcs7 16) (randomPadding bs)
 
 main :: IO ()
-main = putStrLn =<< (mIsECBOrCBC oracle)
+main = putStrLn . show =<< (mIsECBOrCBC 16 oracle)
